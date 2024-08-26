@@ -1,14 +1,9 @@
-class Order {
-    private:
-        int id;
-        ORDER_TYPE type;
-        int shares;
-        float price;
-        int time;
-    public:
-};
+#include "Order.hpp"
 
-enum ORDER_TYPE {
-    BUY = 1,
-    SELL = 2
-};
+#include <iostream>
+
+#include "Common.hpp"
+
+Order::Order() {
+    std::cout << "Order created." << std::endl;
+}
