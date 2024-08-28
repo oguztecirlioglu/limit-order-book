@@ -1,6 +1,7 @@
+#include "Common.hpp"
+
 #ifndef ORDER_H
 #define ORDER_H
-#include "Common.hpp"
 
 class Order {
    private:
