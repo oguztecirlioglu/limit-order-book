@@ -7,16 +7,35 @@ LOB::LOB() {
 }
 
 /**
- * @brief
+ * @brief Adds a new order to the end of the list of orders for that limit, if it's a new limit, order is placed at the head of the new limit.
  *
  * @param newOrder
  * @return int The ID of the newly added order.
  */
 int LOB::add(Order &newOrder) {
-    auto [it, inserted] = this->m_bid.emplace(newOrder.getPrice(), Limit(newOrder.getPrice()));
-    if (!inserted) {
-        it->second.add(newOrder);
+    // If hashmap contains price-limit, get limit, add order to end of limit
+    // Else, create new limit, add it ordered_map & hashmap, add order to new limit.
+    ORDER_TYPE orderType = newOrder.getType();
+    Limit *lim;
+    
+    if (orderType == ORDER_TYPE::BUY) {
+        if (m_bid_table.contains(newOrder.getPrice())) {
+            lim = m_bid_table[newOrder.getPrice()];
+            lim->add(newOrder);
+        } else {
+            lim = new Limit(newOrder.getPrice());
+            m_bid_table[newOrder.getPrice()] = lim; // needs to add a reference, not the object itself.
+        }
+    } else if (orderType == ORDER_TYPE::SELL) {
+        if (m_ask_table.contains(newOrder.getPrice())) {
+            lim = m_ask_table[newOrder.getPrice()];
+        } else {
+            lim = new Limit(newOrder.getPrice());
+            m_ask_table[newOrder.getPrice()] = lim; // needs to add a reference, not the object itself.
+        }
     }
+
+    lim->add(newOrder);
     return newOrder.getId();
 }
 
@@ -27,8 +46,8 @@ int LOB::add(Order &newOrder) {
  * @return int ID of the cancelled, previously existing order, or -1 if it doesn't exist.
  */
 int LOB::cancel(int orderId, int volume, int price, ORDER_TYPE type) {
-    // get order, change its volume by desired amount, if zero, delete order from limit.    
-    if(type == ORDER_TYPE::BUY) {
+    // get order, change its volume by desired amount, if zero, delete order from limit.
+    if (type == ORDER_TYPE::BUY) {
         Limit lim = m_bid.find(price)->second;
         auto order = lim.getOrder(orderId);
         order.

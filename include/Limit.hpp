@@ -10,8 +10,8 @@ class Limit {
     const int m_price;
     int m_totalVolume;
 
-    std::list<Order> orders;                                       // linked list of orders
-    std::unordered_map<int, std::list<Order>::iterator> ordersMap; // Random access to orders to remove in O1.
+    std::list<Order> orders;                                       // Linked List of orders
+    std::unordered_map<int, std::list<Order>::iterator> ordersMap; // Random access to orders to remove in O1, key is order ID.
 
   public:
     Limit(int priceLevel);
