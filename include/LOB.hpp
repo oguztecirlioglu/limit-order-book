@@ -15,19 +15,19 @@ class LOB {
 
     */
   private:
-    std::map<int, Limit *, std::greater<int>> m_bid;
-    std::unordered_map<int, Limit *> m_bid_table;
+    std::map<Price, Limit *, std::greater<Price>> m_bid; // O(1) access to top of book.
+    std::unordered_map<Price, Limit *> m_bid_table;      // O(1) random access to limits keyed off of price.
 
-    std::map<int, Limit *, std::less<int>> m_ask;
-    std::unordered_map<int, Limit *> m_ask_table;
+    std::map<Price, Limit *, std::less<Price>> m_ask;
+    std::unordered_map<Price, Limit *> m_ask_table;
 
   public:
-    int add(Order *newOrder);
-    int cancel(int orderId, int volume, int price, ORDER_TYPE type);      // Partial deletion
-    int totalDelete(int orderId, int volume, int price, ORDER_TYPE type); // Total deletion
-    int execute(int orderId, int volume, int price, ORDER_TYPE type);     // Execute from inside of book at best price, oldest order first.
-    int getVolumeAtLimit(int limit);
-    int getBestPrice(ORDER_TYPE type);
+    OrderId add(Order *newOrder);
+    OrderId cancel(int orderId, int volume, int price, ORDER_TYPE type);      // Partial deletion
+    OrderId totalDelete(int orderId, int volume, int price, ORDER_TYPE type); // Total deletion
+    OrderId execute(int orderId, int volume, int price, ORDER_TYPE type);     // Execute from inside of book at best price, oldest order first.
+    Volume getVolumeAtLimit(int limit);
+    Price getBestPrice(ORDER_TYPE type);
     void printBook(int depth);
     void loadSnapshot(std::string fileDir);
     LOB();

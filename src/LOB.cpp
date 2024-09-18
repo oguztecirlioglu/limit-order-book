@@ -70,7 +70,7 @@ int LOB::cancel(int orderId, int volume, int price, ORDER_TYPE type) {
  */
 int LOB::totalDelete(int orderId, int volume, int price, ORDER_TYPE type) {
     Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[orderId] : m_ask_table[orderId];
-    return lim->remove(orderId);
+    return lim->remove(orderId); // NEED TO THINK ABOUT IF THIS FUNCTION DOES ANYTHING ELSE
 }
 
 /**
@@ -80,24 +80,17 @@ int LOB::totalDelete(int orderId, int volume, int price, ORDER_TYPE type) {
  * @return int ID of the existing order that we executed (took liquidity from), or -1 if it doesn't exist.
  */
 int LOB::execute(int orderId, int volume, int price, ORDER_TYPE type) {
-    switch (type) {
-    case ORDER_TYPE::BUY: {
-        auto it = m_bid.find(price);
-        if (it == m_bid.end())
-            return -1;
+    Limit *lim;
+    if (type == ORDER_TYPE::BUY and m_bid_table.contains(orderId))
+        lim = m_bid_table[orderId];
+    else if (type == ORDER_TYPE::SELL and m_ask_table.contains(orderId))
+        lim = m_ask_table[orderId];
+    else
+        return -1;
 
-        Limit lim = it->second;
-        lim.
-    }
-    case ORDER_TYPE::SELL: {
-        auto it = m_ask.find(price);
-        if (it != m_ask.end()) {
-            return it->second.remove(existingOrder.getId());
-        }
-    }
-    }
+    lim->getOrderVolume(orderId);
 
-    return -1;
+    return orderId;
 }
 
 /**

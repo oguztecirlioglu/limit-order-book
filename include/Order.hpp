@@ -7,19 +7,19 @@
 
 class Order {
   private:
-    const int m_id;
+    const OrderId m_id;
     const ORDER_TYPE m_type;
-    const int m_price;
+    const Price m_price;
     const int64_t m_nanosecondsSinceMidnight;
     int m_shares;
 
   public:
-    Order(int id, ORDER_TYPE type, int shares, int price, int64_t time);
-    int getId();
+    Order(OrderId id, ORDER_TYPE type, Volume shares, Price price, int64_t time);
+    OrderId getId();
     ORDER_TYPE getType();
-    int getShares();
-    void setShares(int newShares);
-    int getPrice();
+    Volume getShares();
+    void setShares(Volume newShares);
+    Price getPrice();
     int64_t getTime();
 };
 
