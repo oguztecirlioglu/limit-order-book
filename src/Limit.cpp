@@ -28,6 +28,12 @@ void Limit::setTotalVolume(int newVolume) {
     return;
 }
 
+int Limit::getOrderVolume(int orderId) {
+    if (not this->ordersMap.contains(orderId))
+        return -1;
+    return (*this->ordersMap[orderId])->getShares();
+}
+
 /**
  * @brief O(1) Operation.
  * Adds a new order to this limit, pushing it to the back of the list, and creating a
@@ -36,43 +42,49 @@ void Limit::setTotalVolume(int newVolume) {
  *
  * @param newOrder
  */
-int Limit::add(Order &newOrder) {
+int Limit::add(Order *newOrder) {
     orders.push_back(newOrder);
-    this->ordersMap[newOrder.getId()] = orders.end();
+    this->ordersMap[newOrder->getId()] = orders.end();
 
     int existingVolume = this->getTotalVolume();
-    this->setTotalVolume(existingVolume + newOrder.getShares());
+    this->setTotalVolume(existingVolume + newOrder->getShares());
 
-    return newOrder.getId();
+    return newOrder->getId();
 }
 
 /**
  * @brief O(1) operation.
- * Removes an existing order from this limit, otherwise throws an exception.
+ * Removes an existing order from this limit, otherwise returns -1.
  * Also removes the entry from the hashmap, and removes however many shares the order contained
  * from the total volume.
  *
  * @param orderToBeDeleted
  */
-int Limit::remove(int id) {
-    auto it = this->ordersMap.find(id);
-    if (it == this->ordersMap.end())
+int Limit::remove(int orderId) {
+    if (not this->ordersMap.contains(orderId))
         return -1;
-
-    this->orders.erase(it->second);
-    this->ordersMap.erase(id);
+    auto it = this->ordersMap[orderId];
+    this->orders.erase(it);
+    this->ordersMap.erase(orderId);
 
     int existingVolume = this->getTotalVolume();
-    int removedVolume = it->second->getShares();
-    this->setTotalVolume(existingVolume - removedVolume);
+    int removedVolume = (*it)->getShares();
+    this->setTotalVolume(existingVolume - removedVolume); // Remove volume from total volume for this limit.
 
-    return id;
+    return orderId;
 }
 
-int Limit::editOrder(int id, int volChange) {
-    auto it = this->ordersMap.find(id);
-    if (it == this->ordersMap.end())
+int Limit::reduceOrder(int orderId, int volChange) {
+    if (not ordersMap.contains(orderId))
         return -1;
 
-    it->
+    int orderVolume = (*this->ordersMap[orderId])->getShares();
+
+    if (orderVolume <= volChange)
+        return this->remove(orderId);
+
+    (*this->ordersMap[orderId])->setShares(orderVolume - volChange);
+    this->setTotalVolume(this->getTotalVolume() - volChange); // Remove volume from total volume for this limit.
+
+    return orderId;
 }

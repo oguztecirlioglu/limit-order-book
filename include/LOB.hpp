@@ -22,7 +22,7 @@ class LOB {
     std::unordered_map<int, Limit *> m_ask_table;
 
   public:
-    int add(Order &newOrder);
+    int add(Order *newOrder);
     int cancel(int orderId, int volume, int price, ORDER_TYPE type);      // Partial deletion
     int totalDelete(int orderId, int volume, int price, ORDER_TYPE type); // Total deletion
     int execute(int orderId, int volume, int price, ORDER_TYPE type);     // Execute from inside of book at best price, oldest order first.
