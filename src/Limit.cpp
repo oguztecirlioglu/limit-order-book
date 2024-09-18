@@ -63,7 +63,7 @@ int Limit::add(Order *newOrder) {
 int Limit::remove(int orderId) {
     if (not this->ordersMap.contains(orderId))
         return -1;
-    auto it = this->ordersMap[orderId];
+    std::list<Order *>::iterator it = this->ordersMap[orderId];
     this->orders.erase(it);
     this->ordersMap.erase(orderId);
 

@@ -24,14 +24,14 @@ int LOB::add(Order *newOrder) {
             lim->add(newOrder);
         } else {
             lim = new Limit(newOrder->getPrice());
-            m_bid_table[newOrder->getPrice()] = lim; // needs to add a reference, not the object itself.
+            m_bid_table[newOrder->getPrice()] = lim;
         }
     } else if (orderType == ORDER_TYPE::SELL) {
         if (m_ask_table.contains(newOrder->getPrice())) {
             lim = m_ask_table[newOrder->getPrice()];
         } else {
             lim = new Limit(newOrder->getPrice());
-            m_ask_table[newOrder->getPrice()] = lim; // needs to add a reference, not the object itself.
+            m_ask_table[newOrder->getPrice()] = lim;
         }
     }
 
@@ -45,7 +45,7 @@ int LOB::add(Order *newOrder) {
  * @param existingOrder
  * @return int ID of the cancelled order, whose shares have been reduced, or -1 if too many shares were removed or order doesn't exist.
  */
-int LOB::cancel(int orderId, int volume, int price, ORDER_TYPE type) {
+int LOB::cancel(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     // Get order, change its volume by desired amount, update relavant limit to reflect decreased volume as well.
     Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[orderId] : m_ask_table[orderId];
 
@@ -68,18 +68,18 @@ int LOB::cancel(int orderId, int volume, int price, ORDER_TYPE type) {
  * @param type
  * @return int ID of deleted order, or -1 if a mismatch between share count and/or the existence of the order itself occurs.
  */
-int LOB::totalDelete(int orderId, int volume, int price, ORDER_TYPE type) {
+int LOB::totalDelete(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[orderId] : m_ask_table[orderId];
     return lim->remove(orderId); // NEED TO THINK ABOUT IF THIS FUNCTION DOES ANYTHING ELSE
 }
 
 /**
- * @brief Executes an existing order. Volume and direction needs to match that of the targeted existing order.
+ * @brief NEEDS TO BE COMPLETED. Executes an existing order. Volume and direction needs to match that of the targeted existing order.
  *
  * @param existingORder
  * @return int ID of the existing order that we executed (took liquidity from), or -1 if it doesn't exist.
  */
-int LOB::execute(int orderId, int volume, int price, ORDER_TYPE type) {
+int LOB::execute(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     Limit *lim;
     if (type == ORDER_TYPE::BUY and m_bid_table.contains(orderId))
         lim = m_bid_table[orderId];
@@ -99,7 +99,7 @@ int LOB::execute(int orderId, int volume, int price, ORDER_TYPE type) {
  * @param limit
  * @return int
  */
-int LOB::getVolumeAtLimit(int limit) {
+Volume LOB::getVolumeAtLimit(Price limit) {
     if (m_ask_table.contains(limit))
         return m_ask_table[limit]->getTotalVolume();
     else if (m_bid_table.contains(limit))
@@ -113,6 +113,6 @@ int LOB::getVolumeAtLimit(int limit) {
  * @param type
  * @return int
  */
-int LOB::getBestPrice(ORDER_TYPE type) {
+Price LOB::getBestPrice(ORDER_TYPE type) {
     return ORDER_TYPE::BUY == type ? m_bid.begin()->first : m_ask.begin()->first;
 }

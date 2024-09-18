@@ -23,10 +23,10 @@ class LOB {
 
   public:
     OrderId add(Order *newOrder);
-    OrderId cancel(int orderId, int volume, int price, ORDER_TYPE type);      // Partial deletion
-    OrderId totalDelete(int orderId, int volume, int price, ORDER_TYPE type); // Total deletion
-    OrderId execute(int orderId, int volume, int price, ORDER_TYPE type);     // Execute from inside of book at best price, oldest order first.
-    Volume getVolumeAtLimit(int limit);
+    OrderId cancel(OrderId orderId, Volume volume, Price price, ORDER_TYPE type);      // Partial deletion
+    OrderId totalDelete(OrderId orderId, Volume volume, Price price, ORDER_TYPE type); // Total deletion
+    OrderId execute(OrderId orderId, Volume volume, Price price, ORDER_TYPE type);     // Execute from inside of book at best price, oldest order first.
+    Volume getVolumeAtLimit(Price limit);
     Price getBestPrice(ORDER_TYPE type);
     void printBook(int depth);
     void loadSnapshot(std::string fileDir);
