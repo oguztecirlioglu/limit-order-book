@@ -24,6 +24,7 @@ int LOB::add(Order *newOrder) {
             lim->add(newOrder);
         } else {
             lim = new Limit(newOrder->getPrice());
+            m_bid[newOrder->getPrice()] = lim;
             m_bid_table[newOrder->getPrice()] = lim;
         }
     } else if (orderType == ORDER_TYPE::SELL) {
@@ -31,6 +32,7 @@ int LOB::add(Order *newOrder) {
             lim = m_ask_table[newOrder->getPrice()];
         } else {
             lim = new Limit(newOrder->getPrice());
+            m_ask[newOrder->getPrice()] = lim;
             m_ask_table[newOrder->getPrice()] = lim;
         }
     }

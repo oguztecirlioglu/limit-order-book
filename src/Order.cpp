@@ -2,7 +2,7 @@
 #include "Common.hpp"
 #include <iostream>
 
-Order::Order(int id, ORDER_TYPE type, int shares, int price, int64_t time)
+Order::Order(OrderId id, ORDER_TYPE type, Volume shares, Price price, std::chrono::system_clock::time_point time)
     : m_id(id), m_type(type), m_shares(shares), m_price(price), m_nanosecondsSinceMidnight(time) // Initializer list
 {
     // Constructor body (empty in this case)
@@ -26,6 +26,6 @@ ORDER_TYPE Order::getType() {
 int Order::getPrice() {
     return this->m_price;
 }
-int64_t Order::getTime() {
+std::chrono::system_clock::time_point Order::getTime() {
     return this->m_nanosecondsSinceMidnight;
 }
