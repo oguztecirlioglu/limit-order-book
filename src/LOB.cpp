@@ -72,11 +72,11 @@ int LOB::cancel(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
  */
 int LOB::totalDelete(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[orderId] : m_ask_table[orderId];
-    return lim->remove(orderId); // NEED TO THINK ABOUT IF THIS FUNCTION DOES ANYTHING ELSE
+    return lim->remove(orderId);
 }
 
 /**
- * @brief NEEDS TO BE COMPLETED. Executes an existing order. Volume and direction needs to match that of the targeted existing order.
+ * @brief Executes an existing order. Volume and direction needs to match that of the targeted existing order.
  *
  * @param existingORder
  * @return int ID of the existing order that we executed (took liquidity from), or -1 if it doesn't exist.
@@ -90,9 +90,7 @@ int LOB::execute(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     else
         return -1;
 
-    lim->getOrderVolume(orderId);
-
-    return orderId;
+    return lim->remove(orderId);
 }
 
 /**
@@ -117,4 +115,26 @@ Volume LOB::getVolumeAtLimit(Price limit) {
  */
 Price LOB::getBestPrice(ORDER_TYPE type) {
     return ORDER_TYPE::BUY == type ? m_bid.begin()->first : m_ask.begin()->first;
+}
+
+void LOB::printBook(int depth) {
+    // ask price 1, ask size 1, bid price 1, bid size 2 ... bid size n.
+    //  eg depth == 2 -> 5859400,200,5853300,18,5859800,200,5853000,150
+    std::ostringstream oss;
+
+    auto bidItr = m_bid.begin();
+    auto askItr = m_ask.begin();
+
+    for (int i = 0; i < depth && bidItr != m_bid.end() && askItr != m_ask.end(); ++i, ++bidItr, ++askItr) {
+        if (i > 0)
+            oss << ',';
+        oss << askItr->second->getPrice() << ',' << askItr->second->getTotalVolume() << ','
+            << bidItr->second->getPrice() << ',' << bidItr->second->getTotalVolume();
+    }
+
+    oss << '\n';
+    std::cout << oss.str();
+}
+
+void LOB::loadSnapshot(std::string fileDir) {
 }
