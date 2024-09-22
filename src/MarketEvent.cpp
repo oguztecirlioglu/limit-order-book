@@ -1,12 +1,17 @@
 #include "MarketEvent.hpp"
 
-MarketEvent::MarketEvent(OrderId id,
+MarketEvent::MarketEvent(int marketEventId,
+                         OrderId id,
                          ORDER_TYPE type,
                          Volume shares,
                          Price price,
                          std::chrono::system_clock::time_point time)
-    : m_id(id), m_type(type), m_price(price), m_shares(shares), m_nanosecondsSinceMidnight(time) {
+    : m_marketEventID(id), m_id(id), m_type(type), m_price(price), m_shares(shares), m_nanosecondsSinceMidnight(time) {
     // Don't think I need a body for this.
+}
+
+int MarketEvent::getMarketEventID() {
+    return m_marketEventID;
 }
 
 OrderId MarketEvent::getOrderId() {

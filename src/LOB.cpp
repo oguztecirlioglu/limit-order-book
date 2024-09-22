@@ -1,6 +1,7 @@
 #include "LOB.hpp"
 
 #include <iostream>
+#include <vector>
 
 LOB::LOB() {
     std::cout << "LOB constructed." << std::endl;
@@ -137,4 +138,5 @@ void LOB::printBook(int depth) {
 }
 
 void LOB::loadSnapshot(std::string fileDir) {
+    
 }
