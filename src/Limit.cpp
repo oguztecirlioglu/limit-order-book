@@ -30,7 +30,7 @@ void Limit::setTotalVolume(int newVolume) {
 
 int Limit::getOrderVolume(int orderId) {
     if (not this->ordersMap.contains(orderId))
-        return -1;
+        throw std::invalid_argument("Cannot find volume, as order does not exist.");
     return (*this->ordersMap[orderId])->getShares();
 }
 
@@ -54,15 +54,17 @@ int Limit::add(Order *newOrder) {
 
 /**
  * @brief O(1) operation.
- * Removes an existing order from this limit, otherwise returns -1.
+ * Removes an existing order from this limit.
  * Also removes the entry from the hashmap, and removes however many shares the order contained
  * from the total volume.
  *
  * @param orderToBeDeleted
+ *
+ * @throws std::invalid_argument when order does not exist in ordersMap.
  */
 int Limit::remove(int orderId) {
     if (not this->ordersMap.contains(orderId))
-        return -1;
+        throw std::invalid_argument("Order does not exist in ordersMap");
     std::list<Order *>::iterator it = this->ordersMap[orderId];
     this->orders.erase(it);
     this->ordersMap.erase(orderId);
@@ -74,9 +76,18 @@ int Limit::remove(int orderId) {
     return orderId;
 }
 
+/**
+ * @brief
+ *
+ * @param orderId
+ * @param volChange
+ * @return int
+ *
+ * @throws std::invalid_argument when order does not exist in ordersMap.
+ */
 int Limit::reduceOrder(int orderId, int volChange) {
     if (not ordersMap.contains(orderId))
-        return -1;
+        throw std::invalid_argument("Order does not exist in ordersMap");
 
     int orderVolume = (*this->ordersMap[orderId])->getShares();
 

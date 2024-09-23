@@ -8,11 +8,11 @@ Order::Order(OrderId id, ORDER_TYPE type, Volume shares, Price price, std::chron
     // Constructor body (empty in this case)
 }
 
-int Order::getId() {
+const int Order::getId() {
     return this->m_id;
 }
 
-int Order::getShares() {
+const int Order::getShares() {
     return this->m_shares;
 }
 
@@ -20,12 +20,21 @@ void Order::setShares(int newShares) {
     this->m_shares = newShares;
 }
 
-ORDER_TYPE Order::getType() {
+const ORDER_TYPE Order::getType() {
     return this->m_type;
 }
-int Order::getPrice() {
+const int Order::getPrice() {
     return this->m_price;
 }
 std::chrono::system_clock::time_point Order::getTime() {
     return this->m_nanosecondsSinceMidnight;
+}
+
+std::ostream &operator<<(std::ostream &out, Order &order) {
+    return out << order.getId() << ", "
+               << order.getShares() << ", "
+               << order.getPrice() << ", "
+               << (order.getType() == ORDER_TYPE::BUY ? 1 : -1) << ", "
+               << order.getTime()
+               << std::endl;
 }

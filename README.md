@@ -29,3 +29,8 @@ Lobster data format in ./sampleData:
   - -1: Sell limit order
   - 1: Buy limit order
   - Note: Execution of a sell (buy) limit order corresponds to a buyer (seller) initiated trade, i.e buy (sell) trade.
+
+Fixing sample data:
+We need to have a utility method that checks all executions or deletions that do not have a corresponding ID. These then need to be added to either the start of day snapshot, or the message before the unmatched execution / deletion.
+
+This is because LOBSTERs data does not include hidden layers in the order book that can be uncovered if a series of cancellations / executions occur and the book significantly moves in one direction. Start of day snapshots using the state of the orderbook at 50 layers deep does not fix this, because the orderbook samples provided by lobster are just Level 1 (price, total volume), and there is no specific order id.

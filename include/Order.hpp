@@ -16,12 +16,14 @@ class Order {
 
   public:
     Order(OrderId id, ORDER_TYPE type, Volume shares, Price price, std::chrono::system_clock::time_point time);
-    OrderId getId();
-    ORDER_TYPE getType();
-    Volume getShares();
+    const OrderId getId();
+    const ORDER_TYPE getType();
+    const Volume getShares();
     void setShares(Volume newShares);
-    Price getPrice();
+    const Price getPrice();
     std::chrono::system_clock::time_point getTime();
 };
+
+std::ostream &operator<<(std::ostream &out, Order &order);
 
 #endif

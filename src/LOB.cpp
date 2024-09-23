@@ -1,5 +1,8 @@
 #include "LOB.hpp"
 
+#include "MarketEvent.hpp"
+#include "Utility.hpp"
+
 #include <iostream>
 #include <vector>
 
@@ -45,15 +48,22 @@ int LOB::add(Order *newOrder) {
 /**
  * @brief Partially cancels an existing order.
  *
- * @param existingOrder
- * @return int ID of the cancelled order, whose shares have been reduced, or -1 if too many shares were removed or order doesn't exist.
+ * Adjusts the volume of an order by a specified amount and updates the corresponding limit.
+ *
+ * @param orderId The ID of the order to be partially cancelled.
+ * @param volume The volume to be removed from the order.
+ * @param price The price of the order.
+ * @param type The type of the order (BUY/SELL).
+ * @return int ID of the cancelled order, whose shares have been reduced.
+ *
+ * @throws std::invalid_argument if the amount of volume to cancel exceeds the total volume of the order.
  */
 int LOB::cancel(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
-    // Get order, change its volume by desired amount, update relavant limit to reflect decreased volume as well.
+    // Get order, change its volume by desired amount, update relevant limit to reflect decreased volume as well.
     Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[orderId] : m_ask_table[orderId];
 
     if (lim->getOrderVolume(orderId) <= volume)
-        return -1; // return erroneous ID because partial deletion shouldn't take up the total or more of the orders volume.
+        throw std::invalid_argument("Amount of volume cancelled in partial cancellation should be less than the total volume of the order.");
 
     lim->reduceOrder(orderId, volume);
 
@@ -69,7 +79,7 @@ int LOB::cancel(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
  * @param volume
  * @param price
  * @param type
- * @return int ID of deleted order, or -1 if a mismatch between share count and/or the existence of the order itself occurs.
+ * @return int ID of deleted order.
  */
 int LOB::totalDelete(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[orderId] : m_ask_table[orderId];
@@ -80,7 +90,10 @@ int LOB::totalDelete(OrderId orderId, Volume volume, Price price, ORDER_TYPE typ
  * @brief Executes an existing order. Volume and direction needs to match that of the targeted existing order.
  *
  * @param existingORder
- * @return int ID of the existing order that we executed (took liquidity from), or -1 if it doesn't exist.
+ * @return int ID of the existing order that we executed (took liquidity from)
+ *
+ * @throws std::invalid_argument if orderID is not found in either bid or ask tables.
+ *
  */
 int LOB::execute(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     Limit *lim;
@@ -89,23 +102,26 @@ int LOB::execute(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     else if (type == ORDER_TYPE::SELL and m_ask_table.contains(orderId))
         lim = m_ask_table[orderId];
     else
-        return -1;
+        throw std::invalid_argument("order ID not found in both ask and bid tables.");
 
     return lim->remove(orderId);
 }
 
 /**
- * @brief Returns total volume at a certain price limit, or -1 if that limit does not exist.
+ * @brief Returns total volume at a certain price limit
  *
  * @param limit
  * @return int
+ *
+ * @throws std::invalid_argument if limit (Price limit) does not exist.
  */
 Volume LOB::getVolumeAtLimit(Price limit) {
     if (m_ask_table.contains(limit))
         return m_ask_table[limit]->getTotalVolume();
     else if (m_bid_table.contains(limit))
         return m_bid_table[limit]->getTotalVolume();
-    return -1;
+
+    throw std::invalid_argument("Limit not found.");
 }
 
 /**
@@ -138,5 +154,9 @@ void LOB::printBook(int depth) {
 }
 
 void LOB::loadSnapshot(std::string fileDir) {
-    
+    std::vector<MarketEvent> events = Utility::loadStartOfDaySnapshot(fileDir);
+    for (auto &event : events) {
+        Order order = Utility::marketEventToOrder(event);
+        LOB::add(&order);
+    }
 }

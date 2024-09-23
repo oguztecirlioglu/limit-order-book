@@ -1,25 +1,26 @@
 #ifndef MARKET_EVENT_H
-#define MARKET_EVENT
+#define MARKET_EVENT_H
 
 #include "Common.hpp"
 #include <chrono>
 
 class MarketEvent {
   private:
-    const int m_marketEventID;
+    const EVENT_TYPE m_eventType;
     const OrderId m_id;
-    const ORDER_TYPE m_type;
+    const ORDER_TYPE m_orderType;
     const Price m_price;
     const std::chrono::system_clock::time_point m_nanosecondsSinceMidnight;
     const Volume m_shares;
 
   public:
-    MarketEvent(int marketEventID, OrderId id, ORDER_TYPE type, Volume m_shares, Price price, std::chrono::system_clock::time_point time);
+    MarketEvent(EVENT_TYPE eventType, OrderId id, ORDER_TYPE orderYype, Volume m_shares, Price price, std::chrono::system_clock::time_point time);
+    EVENT_TYPE getEventType();
     OrderId getOrderId();
     ORDER_TYPE getOrderType();
     std::chrono::system_clock::time_point getEventTime();
     Volume getShares();
-    int getMarketEventID();
+    Price getPrice();
 };
 
 #endif
