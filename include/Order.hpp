@@ -1,5 +1,5 @@
-#ifndef ORDER_H
-#define ORDER_H
+#ifndef ORDER_HPP
+#define ORDER_HPP
 
 #include <chrono>
 #include <stdint.h>

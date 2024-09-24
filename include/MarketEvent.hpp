@@ -1,5 +1,5 @@
-#ifndef MARKET_EVENT_H
-#define MARKET_EVENT_H
+#ifndef MARKET_EVENT_HPP
+#define MARKET_EVENT_HPP
 
 #include "Common.hpp"
 #include <chrono>

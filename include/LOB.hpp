@@ -1,5 +1,5 @@
-#ifndef LOB_H
-#define LOB_H
+#ifndef LOB_HPP
+#define LOB_HPP
 
 #include "Common.hpp"
 #include "Limit.hpp"

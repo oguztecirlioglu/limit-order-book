@@ -1,5 +1,5 @@
-#ifndef MARKET_DATA_PARSER_H
-#define MARKET_DATA_PARSER_H
+#ifndef MARKET_DATA_PARSER_HPP
+#define MARKET_DATA_PARSER_HPP
 
 #include "LOB.hpp"
 #include "MarketEvent.hpp"

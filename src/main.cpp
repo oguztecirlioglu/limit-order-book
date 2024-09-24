@@ -19,7 +19,9 @@ int main() {
     MarketDataParser mdp = MarketDataParser("../sampleData/AAPL_2012-06-21_34200000_57600000_message_5.csv", lob);
 
     std::vector<MarketEvent> allEvents = mdp.getAllEvents();
+    std::cout << allEvents.size() << std::endl;
     for (auto e : allEvents) {
+        std::cout << e.getEventType() << std::endl;
         mdp.processEvent(&e);
     }
     std::cout << "Processed: " << allEvents.size() << " events. " << std::endl;

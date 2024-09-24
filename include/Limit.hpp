@@ -1,5 +1,5 @@
-#ifndef LIMIT_H
-#define LIMIT_H
+#ifndef LIMIT_HPP
+#define LIMIT_HPP
 
 #include "Order.hpp"
 #include <list>
