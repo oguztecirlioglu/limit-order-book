@@ -21,7 +21,7 @@ int main() {
     std::vector<MarketEvent> allEvents = mdp.getAllEvents();
     std::cout << allEvents.size() << std::endl;
     for (auto e : allEvents) {
-        std::cout << e.getEventType() << std::endl;
+        std::cout << e.getOrderId() << " " << e.getEventType() << std::endl;
         mdp.processEvent(&e);
     }
     std::cout << "Processed: " << allEvents.size() << " events. " << std::endl;

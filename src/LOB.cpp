@@ -82,7 +82,10 @@ int LOB::cancel(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
  * @return int ID of deleted order.
  */
 int LOB::totalDelete(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
-    Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[orderId] : m_ask_table[orderId];
+    if (not m_bid_table.contains(price) and not m_ask_table.contains(price)) {
+        throw std::invalid_argument("Price level of limit does not exist.");
+    }
+    Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[price] : m_ask_table[price];
     return lim->remove(orderId);
 }
 
