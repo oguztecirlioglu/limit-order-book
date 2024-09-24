@@ -1,21 +1,25 @@
 #ifndef MARKET_DATA_PARSER_H
 #define MARKET_DATA_PARSER_H
 
+#include "LOB.hpp"
 #include "MarketEvent.hpp"
 
 #include <string>
 #include <vector>
 
 class MarketDataParser {
-    // open file
-    // get next event
+    // Open file
+    // Loads all event to memory, don't have to do FileSystem I/O, faster.
+    // Get Next event
+    // Send order to LOB.
   private:
     std::vector<MarketEvent> marketEvents;
+    LOB limitOrderBook;
 
   public:
-    MarketDataParser(std::string filepath);
-    void LoadAllEvents(); // Loads all event to memory, don't have to do FileSystem I/O, faster.
-    MarketEvent getNextEvent();
+    MarketDataParser(std::string filepath, LOB &lob);
+    void processEvent(MarketEvent *event);
+    std::vector<MarketEvent> getAllEvents();
 };
 
 #endif

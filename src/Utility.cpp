@@ -1,19 +1,11 @@
 #include "Utility.hpp"
+#include "Common.hpp"
+
 #include <fstream>
 #include <iostream>
-
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
-
-const std::unordered_map<int, EVENT_TYPE> eventTypeMap = {
-    {1, EVENT_TYPE::SUBMIT},
-    {2, EVENT_TYPE::CANCEL},
-    {3, EVENT_TYPE::DELETE},
-    {4, EVENT_TYPE::EXECUTE_VISIBLE},
-    {5, EVENT_TYPE::EXECUTE_HIDDEN},
-    {6, EVENT_TYPE::CROSS_TRADE},
-    {7, EVENT_TYPE::HALT}};
 
 void Utility::createStartOfDaySnapshot(std::vector<Order> &missingOrders, const std::string &path) {
     std::ofstream outFile(path);
