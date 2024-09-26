@@ -41,7 +41,7 @@ MarketDataParser::MarketDataParser(std::string filepath, LOB &lob) : limitOrderB
         events.emplace_back(eventType, orderId, type, shares, price, timestamp);
     }
 
-    this->marketEvents = std::move(events); // Causing problems
+    this->marketEvents = std::move(events);
 }
 
 void MarketDataParser::processEvent(MarketEvent *event) {

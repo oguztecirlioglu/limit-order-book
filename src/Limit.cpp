@@ -44,7 +44,7 @@ int Limit::getOrderVolume(int orderId) {
  */
 int Limit::add(Order *newOrder) {
     orders.push_back(newOrder);
-    this->ordersMap[newOrder->getId()] = orders.end();
+    this->ordersMap[newOrder->getId()] = --orders.end();
 
     int existingVolume = this->getTotalVolume();
     this->setTotalVolume(existingVolume + newOrder->getShares());

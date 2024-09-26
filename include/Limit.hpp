@@ -13,11 +13,12 @@ class Limit {
     std::list<Order *> orders;                                           // Linked List of orders
     std::unordered_map<OrderId, std::list<Order *>::iterator> ordersMap; // Random access to orders to remove in O1, key is order ID.
 
+    void setTotalVolume(Volume newVolume);
+
   public:
     Limit(Price priceLevel);
     Price getPrice();
     Volume getTotalVolume();
-    void setTotalVolume(Volume newVolume);
     Volume getOrderVolume(OrderId orderId);
     OrderId add(Order *newOrder);
     OrderId remove(OrderId orderId);

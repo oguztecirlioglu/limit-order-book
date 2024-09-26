@@ -67,8 +67,6 @@ int LOB::cancel(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
 
     lim->reduceOrder(orderId, volume);
 
-    lim->setTotalVolume(lim->getTotalVolume() - volume);
-
     return orderId;
 }
 
@@ -100,14 +98,21 @@ int LOB::totalDelete(OrderId orderId, Volume volume, Price price, ORDER_TYPE typ
  */
 int LOB::execute(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     Limit *lim;
-    if (type == ORDER_TYPE::BUY and m_bid_table.contains(orderId))
-        lim = m_bid_table[orderId];
-    else if (type == ORDER_TYPE::SELL and m_ask_table.contains(orderId))
-        lim = m_ask_table[orderId];
+    if (type == ORDER_TYPE::BUY and m_bid_table.contains(price))
+        lim = m_bid_table[price];
+    else if (type == ORDER_TYPE::SELL and m_ask_table.contains(price))
+        lim = m_ask_table[price];
     else
-        throw std::invalid_argument("order ID not found in both ask and bid tables.");
-
-    return lim->remove(orderId);
+        throw std::invalid_argument("Price not found in both ask and bid tables.");
+    // PARTIAL REMOVALS CAN HAPPEN DURING EXECUTION,
+    Volume originalOrderVolume = lim->getOrderVolume(orderId);
+    if (originalOrderVolume < volume)
+        throw std::invalid_argument("Trying to execute too much volume from this order.");
+    else if (originalOrderVolume == volume)
+        lim->remove(orderId);
+    else
+        lim->reduceOrder(orderId, volume);
+    return orderId;
 }
 
 /**

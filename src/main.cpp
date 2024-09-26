@@ -12,15 +12,14 @@ int main() {
     auto lob = LOB();
 
     std::vector<Order> missingOrders = Utility::findMissingOrders("../sampleData/AAPL_2012-06-21_34200000_57600000_message_5.csv");
-
-    // Utility::createStartOfDaySnapshot(missingOrders, "../sampleData/AAPL_2012-06-21_34200000_57600000_START_OF_DAY_SNAPSHOT.csv");
+    Utility::createStartOfDaySnapshot(missingOrders, "../sampleData/AAPL_2012-06-21_34200000_57600000_START_OF_DAY_SNAPSHOT.csv");
     lob.loadSnapshot("../sampleData/AAPL_2012-06-21_34200000_57600000_START_OF_DAY_SNAPSHOT.csv");
 
     MarketDataParser mdp = MarketDataParser("../sampleData/AAPL_2012-06-21_34200000_57600000_message_5.csv", lob);
 
     std::vector<MarketEvent> allEvents = mdp.getAllEvents();
     std::cout << allEvents.size() << std::endl;
-    for (auto e : allEvents) {
+    for (MarketEvent e : allEvents) {
         std::cout << e.getOrderId() << " " << e.getEventType() << std::endl;
         mdp.processEvent(&e);
     }
