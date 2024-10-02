@@ -57,12 +57,15 @@ int LOB::add(Order *newOrder) {
  * @return int ID of the cancelled order, whose shares have been reduced.
  *
  * @throws std::invalid_argument if the amount of volume to cancel exceeds the total volume of the order.
+ * @throws std::invalid_argument if the order is not in either m_bid_table or m_ask_table
  */
 int LOB::cancel(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     // Get order, change its volume by desired amount, update relevant limit to reflect decreased volume as well.
-    Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[orderId] : m_ask_table[orderId];
+    if (not m_bid_table.contains(price) and not m_ask_table.contains(price))
+        throw std::invalid_argument("orderId not found in bid or ask tables.");
+    Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[price] : m_ask_table[price];
 
-    if (lim->getOrderVolume(orderId) <= volume)
+    if (lim->getOrderVolume(orderId) < volume)
         throw std::invalid_argument("Amount of volume cancelled in partial cancellation should be less than the total volume of the order.");
 
     lim->reduceOrder(orderId, volume);
@@ -164,7 +167,7 @@ void LOB::printBook(int depth) {
 void LOB::loadSnapshot(std::string fileDir) {
     std::vector<MarketEvent> events = Utility::loadStartOfDaySnapshot(fileDir);
     for (auto &event : events) {
-        Order order = Utility::marketEventToOrder(event);
-        LOB::add(&order);
+        Order *order = Utility::marketEventToOrder(event);
+        LOB::add(order);
     }
 }

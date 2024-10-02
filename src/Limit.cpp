@@ -1,15 +1,20 @@
 #include "Limit.hpp"
+#include <iostream>
 #include <stdexcept>
 
 Limit::Limit(int priceLevel) : m_price(priceLevel), m_totalVolume(0) {
     // Constructor body (empty in this case)
 }
 
-int Limit::getPrice() {
+Limit::~Limit() {
+    std::cout << "DESTRUCTING LIMIT " << this->getPrice() << std::endl;
+}
+
+Price Limit::getPrice() {
     return this->m_price;
 }
 
-int Limit::getTotalVolume() {
+Volume Limit::getTotalVolume() {
     return this->m_totalVolume;
 }
 
@@ -28,7 +33,7 @@ void Limit::setTotalVolume(int newVolume) {
     return;
 }
 
-int Limit::getOrderVolume(int orderId) {
+Volume Limit::getOrderVolume(int orderId) {
     if (not this->ordersMap.contains(orderId))
         throw std::invalid_argument("Cannot find volume, as order does not exist.");
     return (*this->ordersMap[orderId])->getShares();
@@ -42,7 +47,7 @@ int Limit::getOrderVolume(int orderId) {
  *
  * @param newOrder
  */
-int Limit::add(Order *newOrder) {
+OrderId Limit::add(Order *newOrder) {
     orders.push_back(newOrder);
     this->ordersMap[newOrder->getId()] = --orders.end();
 
@@ -62,15 +67,16 @@ int Limit::add(Order *newOrder) {
  *
  * @throws std::invalid_argument when order does not exist in ordersMap.
  */
-int Limit::remove(int orderId) {
+OrderId Limit::remove(int orderId) {
     if (not this->ordersMap.contains(orderId))
         throw std::invalid_argument("Order does not exist in ordersMap");
     std::list<Order *>::iterator it = this->ordersMap[orderId];
+    int existingVolume = this->getTotalVolume();
+    int removedVolume = (*it)->getShares();
+
     this->orders.erase(it);
     this->ordersMap.erase(orderId);
 
-    int existingVolume = this->getTotalVolume();
-    int removedVolume = (*it)->getShares();
     this->setTotalVolume(existingVolume - removedVolume); // Remove volume from total volume for this limit.
 
     return orderId;
@@ -85,7 +91,7 @@ int Limit::remove(int orderId) {
  *
  * @throws std::invalid_argument when order does not exist in ordersMap.
  */
-int Limit::reduceOrder(int orderId, int volChange) {
+OrderId Limit::reduceOrder(int orderId, int volChange) {
     if (not ordersMap.contains(orderId))
         throw std::invalid_argument("Order does not exist in ordersMap");
 

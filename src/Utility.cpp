@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -74,7 +75,6 @@ std::vector<Order> Utility::findMissingOrders(const std::string &messageFilePath
 
     std::unordered_map<OrderId, Order> knownOrders;
     std::unordered_map<OrderId, Order> missingOrders;
-    std::unordered_set<OrderId> deletedOrderIds;
 
     std::string line;
     while (std::getline(file, line)) {
@@ -109,8 +109,7 @@ std::vector<Order> Utility::findMissingOrders(const std::string &messageFilePath
         case 3: // Delete
         case 4: // Execute Visible
             if (not knownOrders.contains(orderId) and
-                not missingOrders.contains(orderId) and
-                not deletedOrderIds.contains(orderId)) {
+                not missingOrders.contains(orderId)) {
                 // This is a missing order
 
                 constexpr long long secondsSinceMidnight = 8 * 3600; // 28800 seconds
@@ -118,24 +117,12 @@ std::vector<Order> Utility::findMissingOrders(const std::string &messageFilePath
                 std::chrono::system_clock::time_point tradeTime =
                     std::chrono::system_clock::time_point(std::chrono::nanoseconds(nanosecondsSinceMidnight));
 
-                Order missingOrder(orderId, direction, shares, price, tradeTime); // Use 0 as timestamp for missing orders
+                Order missingOrder(orderId, direction, shares, price, tradeTime);
                 missingOrders.emplace(orderId, missingOrder);
-            }
-
-            if (eventType == 2) { // Cancel
-                if (knownOrders.contains(orderId)) {
-                    auto order = knownOrders.find(orderId);
-                    Volume origShareCount = order->second.getShares();
-                    order->second.setShares(origShareCount - shares);
-                } else if (missingOrders.contains(orderId)) {
-                    auto order = missingOrders.find(orderId);
-                    Volume origShareCount = order->second.getShares();
-                    order->second.setShares(origShareCount - shares);
-                }
-            } else if (eventType == 3) { // Delete
-                knownOrders.erase(orderId);
-                missingOrders.erase(orderId);
-                deletedOrderIds.insert(orderId);
+            } else if (missingOrders.contains(orderId)) { // Cancelling more shares from an already missing order.
+                auto order = missingOrders.find(orderId);
+                Volume origShareCount = order->second.getShares();
+                order->second.setShares(origShareCount + shares);
             }
             break;
         case 5: // Execute Hidden
@@ -154,6 +141,6 @@ std::vector<Order> Utility::findMissingOrders(const std::string &messageFilePath
     return result;
 }
 
-Order Utility::marketEventToOrder(MarketEvent &event) {
-    return Order(event.getOrderId(), event.getOrderType(), event.getShares(), event.getPrice(), event.getEventTime());
+Order *Utility::marketEventToOrder(MarketEvent &event) {
+    return new Order(event.getOrderId(), event.getOrderType(), event.getShares(), event.getPrice(), event.getEventTime());
 }

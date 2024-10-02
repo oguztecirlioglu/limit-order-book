@@ -17,6 +17,7 @@ class Limit {
 
   public:
     Limit(Price priceLevel);
+    ~Limit();
     Price getPrice();
     Volume getTotalVolume();
     Volume getOrderVolume(OrderId orderId);

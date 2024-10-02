@@ -13,7 +13,7 @@ class Utility {
     static std::vector<MarketEvent> loadStartOfDaySnapshot(const std::string &path);
     static std::vector<Order> findMissingOrders(const std::string &messageFilePath);
 
-    static Order marketEventToOrder(MarketEvent &event);
+    static Order *marketEventToOrder(MarketEvent &event);
     static MarketEvent orderToMarketEvent(Order &order);
 };
 
