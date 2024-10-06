@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-MarketDataParser::MarketDataParser(std::string filepath, LOB &lob) : limitOrderBook(lob) {
+MarketDataParser::MarketDataParser(std::string filepath, LOB *lob) : limitOrderBook(lob) {
     // Load all events into this->marketEvents
     std::ifstream inFile(filepath);
     if (!inFile.is_open()) {
@@ -45,20 +45,21 @@ MarketDataParser::MarketDataParser(std::string filepath, LOB &lob) : limitOrderB
 }
 
 void MarketDataParser::processEvent(MarketEvent *event) {
-    Order *newOrder = new Order(event->getOrderId(), event->getOrderType(), event->getShares(), event->getPrice(), event->getEventTime());
 
     switch (event->getEventType()) {
+        Order *newOrder;
     case EVENT_TYPE::SUBMIT:
-        this->limitOrderBook.add(newOrder);
+        newOrder = new Order(event->getOrderId(), event->getOrderType(), event->getShares(), event->getPrice(), event->getEventTime());
+        this->limitOrderBook->add(newOrder);
         break;
     case EVENT_TYPE::CANCEL:
-        this->limitOrderBook.cancel(event->getOrderId(), event->getShares(), event->getPrice(), event->getOrderType());
+        this->limitOrderBook->cancel(event->getOrderId(), event->getShares(), event->getPrice(), event->getOrderType());
         break;
     case EVENT_TYPE::DELETE:
-        this->limitOrderBook.totalDelete(event->getOrderId(), event->getShares(), event->getPrice(), event->getOrderType());
+        this->limitOrderBook->totalDelete(event->getOrderId(), event->getShares(), event->getPrice(), event->getOrderType());
         break;
     case EVENT_TYPE::EXECUTE_VISIBLE:
-        this->limitOrderBook.execute(event->getOrderId(), event->getShares(), event->getPrice(), event->getOrderType());
+        this->limitOrderBook->execute(event->getOrderId(), event->getShares(), event->getPrice(), event->getOrderType());
         break;
     case EVENT_TYPE::EXECUTE_HIDDEN:
         // Do nothing, as we are executing hidden stuff.

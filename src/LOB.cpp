@@ -10,6 +10,24 @@ LOB::LOB() {
     std::cout << "LOB constructed." << std::endl;
 }
 
+LOB::~LOB() {
+    int i = 0;
+
+    for (auto &[p, l] : m_bid_table) {
+        i++;
+        delete l;
+    }
+    m_bid_table.clear();
+    m_bid.clear();
+
+    for (auto &[p, l] : m_ask_table) {
+        i++;
+        delete l;
+    }
+    m_ask_table.clear();
+    m_ask.clear();
+}
+
 /**
  * @brief Adds a new order to the end of the list of orders for that limit, if it's a new limit, order is placed at the head of the new limit.
  *
@@ -25,7 +43,6 @@ int LOB::add(Order *newOrder) {
     if (orderType == ORDER_TYPE::BUY) {
         if (m_bid_table.contains(newOrder->getPrice())) {
             lim = m_bid_table[newOrder->getPrice()];
-            lim->add(newOrder);
         } else {
             lim = new Limit(newOrder->getPrice());
             m_bid[newOrder->getPrice()] = lim;

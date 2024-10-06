@@ -7,7 +7,11 @@ Limit::Limit(int priceLevel) : m_price(priceLevel), m_totalVolume(0) {
 }
 
 Limit::~Limit() {
-    std::cout << "DESTRUCTING LIMIT " << this->getPrice() << std::endl;
+    for (auto order : orders) {
+        delete order;
+    }
+    ordersMap.clear();
+    orders.clear();
 }
 
 Price Limit::getPrice() {
@@ -74,6 +78,7 @@ OrderId Limit::remove(int orderId) {
     int existingVolume = this->getTotalVolume();
     int removedVolume = (*it)->getShares();
 
+    delete *it;
     this->orders.erase(it);
     this->ordersMap.erase(orderId);
 

@@ -14,10 +14,10 @@ class MarketDataParser {
     // Send order to LOB.
   private:
     std::vector<MarketEvent> marketEvents;
-    LOB limitOrderBook;
+    LOB *limitOrderBook;
 
   public:
-    MarketDataParser(std::string filepath, LOB &lob);
+    MarketDataParser(std::string filepath, LOB *lob);
     void processEvent(MarketEvent *event);
     std::vector<MarketEvent> getAllEvents();
 };

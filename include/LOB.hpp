@@ -33,6 +33,7 @@ class LOB {
     void printBook(int depth);
     void loadSnapshot(std::string fileDir);
     LOB();
+    ~LOB();
 };
 
 #endif
