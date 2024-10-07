@@ -4,6 +4,7 @@
 #include "LOB.hpp"
 #include "MarketEvent.hpp"
 
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -13,13 +14,17 @@ class MarketDataParser {
     // Get Next event
     // Send order to LOB.
   private:
-    std::vector<MarketEvent> marketEvents;
-    LOB *limitOrderBook;
+    std::vector<MarketEvent> m_marketEvents;
+    LOB *m_limitOrderBook;
+    std::ifstream m_inFileStream;
 
   public:
     MarketDataParser(std::string filepath, LOB *lob);
+    ~MarketDataParser();
     void processEvent(MarketEvent *event);
     std::vector<MarketEvent> getAllEvents();
+    MarketEvent *getNextEvent();
+    void resetFileStream();
 };
 
 #endif

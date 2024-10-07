@@ -17,11 +17,12 @@ int main() {
     MarketDataParser mdp = MarketDataParser("../sampleData/AAPL_2012-06-21_34200000_57600000_message_5.csv", &lob);
 
     std::vector<MarketEvent> allEvents = mdp.getAllEvents();
+    mdp.resetFileStream();
 
     auto start = std::chrono::high_resolution_clock::now();
-    for (MarketEvent e : allEvents) {
-        // std::cout << e.getOrderId() << " " << e.getEventType() << std::endl;
-        mdp.processEvent(&e);
+    for (MarketEvent *e = mdp.getNextEvent(); e != nullptr; e = mdp.getNextEvent()) {
+        // std::cout << e->getOrderId() << " " << e->getEventType() << std::endl;
+        mdp.processEvent(e);
     }
 
     auto end = std::chrono::high_resolution_clock::now();
