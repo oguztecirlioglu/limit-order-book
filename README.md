@@ -1,17 +1,10 @@
 This project uses C++ 23 so you may see newer syntax.
 
-Need to do:
-Add
-Cancel
-Execute (Market Order)
-Best Bid / Ask
-Volume at Limit
-
 Add operation places an order at the end of a list of orders to be executed at a particular limit price
 Cancel operation removes an order from anywhere in the book
 Execution removes an order from the inside of the book (the inside of the book is defined as the oldest buy order at the highest buying price and the oldest sell order at the lowest selling price)
 
-Lobster data format in ./sampleData:
+### Lobster data format in ./sampleData:
 
 - Time: Seconds after midnight with decimal precision of at least milliseconds and up to nanoseconds depending on the period requested
 - Event Type:
@@ -30,7 +23,14 @@ Lobster data format in ./sampleData:
   - 1: Buy limit order
   - Note: Execution of a sell (buy) limit order corresponds to a buyer (seller) initiated trade, i.e buy (sell) trade.
 
-Fixing sample data:
+### Fixing sample data:
+
 We need to have a utility method that checks all executions or deletions that do not have a corresponding ID. These then need to be added to either the start of day snapshot, or the message before the unmatched execution / deletion.
 
 This is because LOBSTERs data does not include hidden layers in the order book that can be uncovered if a series of cancellations / executions occur and the book significantly moves in one direction. Start of day snapshots using the state of the orderbook at 50 layers deep does not fix this, because the orderbook samples provided by lobster are just Level 1 (price, total volume), and there is no specific order id.
+
+### Creating the binary:
+
+1. Create a subdirectory called build: `mkdir build`
+2. Run CMake to generate build files: `cmake ..`
+3. Build the project using the generated Makefiles: `cmake --build .`
