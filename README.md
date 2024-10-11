@@ -34,3 +34,10 @@ This is because LOBSTERs data does not include hidden layers in the order book t
 1. Create a subdirectory called build: `mkdir build`
 2. Run CMake to generate build files: `cmake ..`
 3. Build the project using the generated Makefiles: `cmake --build .`
+
+## Benchmark commands used:
+
+Valgrind --tool=callgrind
+Kcachegrind to visualise callgrind output
+perf stat
+perf
