@@ -41,3 +41,10 @@ Valgrind --tool=callgrind
 Kcachegrind to visualise callgrind output
 perf stat
 perf
+
+### Benchmark Visualisation
+![Naive approach](./benchmarks/kcachegrind_naive_2024-10-11_21-35.png)
+
+![All unordered_maps are boosts flatmap](./benchmarks/kcachegrind_flatmap_everything_perf_2024-10-11_20-46.png)
+
+![All unordered_maps are boosts flatmap and using vector instead of list](./benchmarks/kcachegrind_flatmap_vector_2024-10-11_23-40.png)
