@@ -1,0 +1,17 @@
+# started on Fri Oct 11 23:31:20 2024
+
+
+ Performance counter stats for '../build/clob':
+
+       177,503,551      cache-references:u                                                    
+         2,268,224      cache-misses:u                   #    1.28% of all cache refs         
+     3,421,830,056      cycles:u                                                              
+     7,251,458,576      instructions:u                   #    2.12  insn per cycle            
+         2,356,913      branch-misses:u                                                       
+
+       0.768794657 seconds time elapsed
+
+       0.727731000 seconds user
+       0.040063000 seconds sys
+
+

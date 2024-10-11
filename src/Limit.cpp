@@ -41,7 +41,8 @@ void Limit::setTotalVolume(int newVolume) {
 Volume Limit::getOrderVolume(int orderId) {
     if (not this->ordersMap.contains(orderId))
         throw std::invalid_argument("Cannot find volume, as order does not exist.");
-    return (*this->ordersMap[orderId])->getShares();
+    size_t index = this->ordersMap[orderId];
+    return (this->orders[index])->getShares();
 }
 
 /**
@@ -54,7 +55,7 @@ Volume Limit::getOrderVolume(int orderId) {
  */
 OrderId Limit::add(Order *newOrder) {
     orders.push_back(newOrder);
-    this->ordersMap[newOrder->getId()] = --orders.end();
+    this->ordersMap[newOrder->getId()] = orders.size() - 1;
 
     int existingVolume = this->getTotalVolume();
     this->setTotalVolume(existingVolume + newOrder->getShares());
@@ -74,13 +75,19 @@ OrderId Limit::add(Order *newOrder) {
  */
 OrderId Limit::remove(int orderId) {
     if (not this->ordersMap.contains(orderId))
-        throw std::invalid_argument("Order does not exist in ordersMap");
-    std::list<Order *>::iterator it = this->ordersMap[orderId];
+        throw std::invalid_argument("Remove - Order does not exist in ordersMap");
+    size_t index = this->ordersMap[orderId];
+    Order *order = this->orders[index];
     int existingVolume = this->getTotalVolume();
-    int removedVolume = (*it)->getShares();
+    int removedVolume = order->getShares();
 
-    delete *it;
-    this->orders.erase(it);
+    if (index != this->orders.size() - 1) {
+        this->orders[index] = this->orders[this->orders.size() - 1];
+        this->ordersMap[this->orders[index]->getId()] = index;
+    }
+
+    delete order;
+    this->orders.pop_back();
     this->ordersMap.erase(orderId);
 
     this->setTotalVolume(existingVolume - removedVolume); // Remove volume from total volume for this limit.
@@ -99,14 +106,15 @@ OrderId Limit::remove(int orderId) {
  */
 OrderId Limit::reduceOrder(int orderId, int volChange) {
     if (not ordersMap.contains(orderId))
-        throw std::invalid_argument("Order does not exist in ordersMap");
+        throw std::invalid_argument("Reduce Order - Order does not exist in ordersMap");
 
-    int orderVolume = (*this->ordersMap[orderId])->getShares();
+    size_t index = this->ordersMap[orderId];
+    int orderVolume = this->orders[index]->getShares();
 
     if (orderVolume <= volChange)
         return this->remove(orderId);
 
-    (*this->ordersMap[orderId])->setShares(orderVolume - volChange);
+    this->orders[index]->setShares(orderVolume - volChange);
     this->setTotalVolume(this->getTotalVolume() - volChange); // Remove volume from total volume for this limit.
 
     return orderId;
