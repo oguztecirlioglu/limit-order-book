@@ -8,20 +8,20 @@
 
 LOB::LOB() {
     std::cout << "LOB constructed." << std::endl;
+    this->m_ask_table.reserve(3000);
+    this->m_bid_table.reserve(3000);
 }
 
 LOB::~LOB() {
-    int i = 0;
+    std::cout << m_bid_table.bucket_count() << " " << m_ask_table.bucket_count() << std::endl;
 
     for (auto &[p, l] : m_bid_table) {
-        i++;
         delete l;
     }
     m_bid_table.clear();
     m_bid.clear();
 
     for (auto &[p, l] : m_ask_table) {
-        i++;
         delete l;
     }
     m_ask_table.clear();

@@ -4,6 +4,7 @@
 
 Limit::Limit(int priceLevel) : m_price(priceLevel), m_totalVolume(0) {
     // Constructor body (empty in this case)
+    this->ordersMap.reserve(40);
 }
 
 Limit::~Limit() {
