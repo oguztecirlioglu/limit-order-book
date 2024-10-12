@@ -72,7 +72,8 @@
         "complex": "cpp",
         "source_location": "cpp",
         "shared_mutex": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "stdfloat": "cpp"
     },
     "C_Cpp.enhancedColorization": "enabled",
 }

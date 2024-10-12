@@ -1,6 +1,7 @@
 #ifndef LIMIT_HPP
 #define LIMIT_HPP
 
+#include "FastVec.hpp"
 #include "Order.hpp"
 #include <boost/unordered/unordered_flat_map.hpp>
 #include <vector>
@@ -10,8 +11,7 @@ class Limit {
     const Price m_price;
     Volume m_totalVolume;
 
-    std::vector<Order *> orders;                                     // Linked List of orders
-    boost::unordered::unordered_flat_map<OrderId, size_t> ordersMap; // Random access to orders to remove in O1, key is order ID.
+    FastVec<Order *> orders;
 
     void setTotalVolume(Volume newVolume);
 
@@ -25,5 +25,7 @@ class Limit {
     OrderId remove(OrderId orderId);
     OrderId reduceOrder(OrderId orderId, Volume volChange);
 };
+
+
 
 #endif
