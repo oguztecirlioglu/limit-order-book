@@ -42,20 +42,23 @@ void FastVec<T>::push_back(T item) {
 
 template <class T>
 void FastVec<T>::erase(id itemId) {
-    if (not this->ordersMap.contains(itemId)) {
+    auto it = this->ordersMap.find(itemId);
+    if (it == this->ordersMap.end()) {
         throw std::invalid_argument("Remove - id does not exist in hashmap");
     }
 
-    fast_vec_index i = this->ordersMap[itemId];
-    T elem = this->orders[i];
+    fast_vec_index i = it->second;
+    T elem = std::move(this->orders[i]);
 
-    if (i != this->orders.size() - 1) {
-        this->orders[i] = std::move(this->orders.back());
+    fast_vec_index lastIdx = this->orders.size() - 1;
+    if (i != lastIdx) {
+        this->orders[i] = std::move(this->orders[lastIdx]);
         this->ordersMap[this->orders[i]->getId()] = i;
     }
 
-    this->ordersMap.erase(itemId);
     this->orders.pop_back();
+    this->ordersMap.erase(it);
+
     delete elem;
 }
 
@@ -66,10 +69,11 @@ bool FastVec<T>::contains(id itemId) {
 
 template <class T>
 T FastVec<T>::get(id itemId) {
-    if (not this->ordersMap.contains(itemId)) {
-        throw std::invalid_argument("Remove - id does not exist in hashmap");
+    auto it = this->ordersMap.find(itemId); // Single lookup
+    if (it == this->ordersMap.end()) {
+        throw std::invalid_argument("Get - id does not exist in hashmap");
     }
-    return orders[ordersMap[itemId]];
+    return this->orders[it->second]; // Use iterator result for direct access
 }
 
 template <class T>
