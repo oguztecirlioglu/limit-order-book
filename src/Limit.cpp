@@ -7,9 +7,9 @@ Limit::Limit(int priceLevel) : m_price(priceLevel), m_totalVolume(0), orders(60)
 }
 
 Limit::~Limit() {
-    for (auto order : orders) {
-        delete order;
-    }
+    // for (auto order : orders) {
+    //     delete order;
+    // }
     orders.clear();
 }
 

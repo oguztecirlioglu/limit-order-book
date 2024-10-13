@@ -2,6 +2,7 @@
 #define LIMIT_HPP
 
 #include "FastVec.hpp"
+#include "LinkedHashMap.hpp"
 #include "Order.hpp"
 #include <boost/unordered/unordered_flat_map.hpp>
 #include <vector>
@@ -11,7 +12,8 @@ class Limit {
     const Price m_price;
     Volume m_totalVolume;
 
-    FastVec<Order *> orders;
+    LinkedHashMap<Order *> orders;
+    // FastVec<Order *> orders;
 
     void setTotalVolume(Volume newVolume);
 
@@ -25,7 +27,5 @@ class Limit {
     OrderId remove(OrderId orderId);
     OrderId reduceOrder(OrderId orderId, Volume volChange);
 };
-
-
 
 #endif
