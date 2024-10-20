@@ -34,6 +34,7 @@ template <class T>
 FastVec<T>::FastVec(unsigned int init_capacity) {
     this->orders.reserve(init_capacity);
     this->ordersMap.set_empty_key(-1);
+    this->ordersMap.set_deleted_key(-1);
 }
 
 template <class T>

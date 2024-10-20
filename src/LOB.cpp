@@ -9,7 +9,9 @@
 LOB::LOB() {
     std::cout << "LOB constructed." << std::endl;
     this->m_bid_table.set_empty_key(-1);
-    this->m_ask_table.set_empty_key(-1);
+    this->m_bid_table.set_empty_key(-1);
+    this->m_bid_table.set_deleted_key(-1);
+    this->m_ask_table.set_deleted_key(-1);
 }
 
 LOB::~LOB() {
