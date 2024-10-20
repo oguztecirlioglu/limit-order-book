@@ -73,7 +73,8 @@
         "source_location": "cpp",
         "shared_mutex": "cpp",
         "typeindex": "cpp",
-        "stdfloat": "cpp"
+        "stdfloat": "cpp",
+        "dense_hash_map": "cpp"
     },
     "C_Cpp.enhancedColorization": "enabled",
 }

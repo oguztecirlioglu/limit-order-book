@@ -10,7 +10,7 @@
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
-                "-O1"
+                "-O2"
             ],
             "options": {
                 "cwd": "${fileDirname}"

@@ -8,8 +8,8 @@
 
 LOB::LOB() {
     std::cout << "LOB constructed." << std::endl;
-    this->m_ask_table.reserve(3000);
-    this->m_bid_table.reserve(3000);
+    this->m_bid_table.set_empty_key(-1);
+    this->m_ask_table.set_empty_key(-1);
 }
 
 LOB::~LOB() {
@@ -41,16 +41,18 @@ int LOB::add(Order *newOrder) {
     Limit *lim;
 
     if (orderType == ORDER_TYPE::BUY) {
-        if (m_bid_table.contains(newOrder->getPrice())) {
-            lim = m_bid_table[newOrder->getPrice()];
+        auto buyLim = m_bid_table.find(newOrder->getPrice());
+        if (buyLim != m_bid_table.end()) {
+            lim = buyLim->second;
         } else {
             lim = new Limit(newOrder->getPrice());
             m_bid[newOrder->getPrice()] = lim;
             m_bid_table[newOrder->getPrice()] = lim;
         }
     } else if (orderType == ORDER_TYPE::SELL) {
-        if (m_ask_table.contains(newOrder->getPrice())) {
-            lim = m_ask_table[newOrder->getPrice()];
+        auto sellLim = m_ask_table.find(newOrder->getPrice());
+        if (sellLim != m_ask_table.end()) {
+            lim = sellLim->second;
         } else {
             lim = new Limit(newOrder->getPrice());
             m_ask[newOrder->getPrice()] = lim;
@@ -78,9 +80,13 @@ int LOB::add(Order *newOrder) {
  */
 int LOB::cancel(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
     // Get order, change its volume by desired amount, update relevant limit to reflect decreased volume as well.
-    if (not m_bid_table.contains(price) and not m_ask_table.contains(price))
+    auto buyLim = m_bid_table.find(price);
+    auto sellLim = m_ask_table.find(price);
+
+    if (buyLim == m_bid_table.end() and sellLim == m_ask_table.end())
         throw std::invalid_argument("orderId not found in bid or ask tables.");
-    Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[price] : m_ask_table[price];
+
+    Limit *lim = type == ORDER_TYPE::BUY ? buyLim->second : sellLim->second;
 
     if (lim->getOrderVolume(orderId) < volume)
         throw std::invalid_argument("Amount of volume cancelled in partial cancellation should be less than the total volume of the order.");
@@ -100,10 +106,13 @@ int LOB::cancel(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
  * @return int ID of deleted order.
  */
 int LOB::totalDelete(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
-    if (not m_bid_table.contains(price) and not m_ask_table.contains(price)) {
-        throw std::invalid_argument("Price level of limit does not exist.");
-    }
-    Limit *lim = type == ORDER_TYPE::BUY ? m_bid_table[price] : m_ask_table[price];
+    auto buyLim = m_bid_table.find(price);
+    auto sellLim = m_ask_table.find(price);
+
+    if (buyLim == m_bid_table.end() and sellLim == m_ask_table.end())
+        throw std::invalid_argument("orderId not found in bid or ask tables.");
+
+    Limit *lim = type == ORDER_TYPE::BUY ? buyLim->second : sellLim->second;
     return lim->remove(orderId);
 }
 
@@ -117,10 +126,13 @@ int LOB::totalDelete(OrderId orderId, Volume volume, Price price, ORDER_TYPE typ
  *
  */
 int LOB::execute(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
+    auto buyLim = m_bid_table.find(price);
+    auto sellLim = m_ask_table.find(price);
     Limit *lim;
-    if (type == ORDER_TYPE::BUY and m_bid_table.contains(price))
+
+    if (type == ORDER_TYPE::BUY and buyLim != m_bid_table.end())
         lim = m_bid_table[price];
-    else if (type == ORDER_TYPE::SELL and m_ask_table.contains(price))
+    else if (type == ORDER_TYPE::SELL and sellLim != m_ask_table.end())
         lim = m_ask_table[price];
     else
         throw std::invalid_argument("Price not found in both ask and bid tables.");
@@ -144,9 +156,12 @@ int LOB::execute(OrderId orderId, Volume volume, Price price, ORDER_TYPE type) {
  * @throws std::invalid_argument if limit (Price limit) does not exist.
  */
 Volume LOB::getVolumeAtLimit(Price limit) {
-    if (m_ask_table.contains(limit))
+    auto buyLim = m_bid_table.find(limit);
+    auto sellLim = m_ask_table.find(limit);
+
+    if (sellLim != m_ask_table.end())
         return m_ask_table[limit]->getTotalVolume();
-    else if (m_bid_table.contains(limit))
+    else if (buyLim != m_bid_table.end())
         return m_bid_table[limit]->getTotalVolume();
 
     throw std::invalid_argument("Limit not found.");

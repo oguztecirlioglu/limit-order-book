@@ -8,6 +8,7 @@
 #include <boost/container/flat_map.hpp>
 #include <boost/unordered/unordered_map.hpp>
 #include <map>
+#include <sparsehash/dense_hash_map>
 #include <string>
 
 class LOB {
@@ -18,10 +19,10 @@ class LOB {
     */
   private:
     boost::container::flat_map<Price, Limit *, std::less<Price>> m_bid; // O(1) access to top of book.
-    boost::unordered::unordered_map<Price, Limit *> m_bid_table;        // O(1) random access to limits keyed off of price.
+    google::dense_hash_map<Price, Limit *> m_bid_table;                 // O(1) random access to limits keyed off of price.
 
     boost::container::flat_map<Price, Limit *, std::greater<Price>> m_ask;
-    boost::unordered::unordered_map<Price, Limit *> m_ask_table;
+    google::dense_hash_map<Price, Limit *> m_ask_table;
 
   public:
     OrderId add(Order *newOrder);

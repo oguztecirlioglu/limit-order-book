@@ -2,6 +2,7 @@
 #define FASTVEC_HPP
 
 #include <boost/unordered/unordered_flat_map.hpp>
+#include <sparsehash/dense_hash_map>
 #include <vector>
 
 using id = int;
@@ -10,8 +11,8 @@ using fast_vec_index = unsigned int;
 template <class T>
 class FastVec {
   private:
-    std::vector<T> orders;                                              // Linked List of orders
-    boost::unordered::unordered_flat_map<id, fast_vec_index> ordersMap; // Random access to orders to remove in O1, key is order ID.
+    std::vector<T> orders;                                // Linked List of orders
+    google::dense_hash_map<id, fast_vec_index> ordersMap; // Random access to orders to remove in O1, key is order ID
 
   public:
     FastVec(unsigned int init_capacity);
@@ -32,6 +33,7 @@ class FastVec {
 template <class T>
 FastVec<T>::FastVec(unsigned int init_capacity) {
     this->orders.reserve(init_capacity);
+    this->ordersMap.set_empty_key(-1);
 }
 
 template <class T>
@@ -64,7 +66,7 @@ void FastVec<T>::erase(id itemId) {
 
 template <class T>
 bool FastVec<T>::contains(id itemId) {
-    return this->ordersMap.contains(itemId);
+    return this->ordersMap.find(itemId) != this->ordersMap.end();
 }
 
 template <class T>
