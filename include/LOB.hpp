@@ -19,10 +19,10 @@ class LOB {
     */
   private:
     boost::container::flat_map<Price, Limit *, std::less<Price>> m_bid; // O(1) access to top of book.
-    google::dense_hash_map<Price, Limit *> m_bid_table;                 // O(1) random access to limits keyed off of price.
+    boost::unordered::unordered_flat_map<Price, Limit *> m_bid_table;   // O(1) random access to limits keyed off of price.
 
     boost::container::flat_map<Price, Limit *, std::greater<Price>> m_ask;
-    google::dense_hash_map<Price, Limit *> m_ask_table;
+    boost::unordered::unordered_flat_map<Price, Limit *> m_ask_table;
 
   public:
     OrderId add(Order *newOrder);
