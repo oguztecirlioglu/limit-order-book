@@ -4,6 +4,7 @@
 #include "Order.hpp"
 #include <boost/unordered/unordered_flat_map.hpp>
 #include <list>
+#include <sparsehash/dense_hash_map>
 
 using id = int;
 using fast_vec_index = unsigned int;
@@ -11,9 +12,8 @@ using fast_vec_index = unsigned int;
 template <class T>
 class LinkedHashMap {
   private:
-    std::list<T> orders;                                                                      // Linked List of orders
-    boost::unordered::unordered_flat_map<OrderId, typename std::list<T>::iterator> ordersMap; // Random access to orders to remove in O1, key is order ID.
-
+    std::list<T> orders;                                                        // Linked List of orders
+    google::dense_hash_map<OrderId, typename std::list<T>::iterator> ordersMap; // O(1) random access to limits keyed off of price.
   public:
     LinkedHashMap(unsigned int init_capacity);
     void push_back(T item);
@@ -30,6 +30,8 @@ class LinkedHashMap {
 
 template <class T>
 LinkedHashMap<T>::LinkedHashMap(unsigned int init_capacity) {
+    ordersMap.set_empty_key(-1);
+    ordersMap.set_deleted_key(-2);
 }
 
 template <class T>
@@ -55,7 +57,7 @@ void LinkedHashMap<T>::erase(id itemId) {
 
 template <class T>
 bool LinkedHashMap<T>::contains(id itemId) {
-    return this->ordersMap.contains(itemId);
+    return this->ordersMap.find(itemId) != this->ordersMap.end();
 }
 
 template <class T>
